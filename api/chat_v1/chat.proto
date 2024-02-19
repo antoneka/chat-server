@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package chat_v1;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/antoneka/chat-server/pkg/chat_v1;chat_v1";
+
+// ChatV1 is a service responsible for the logic of the chat.
+service ChatV1 {
+  // Create creates a new chat.
+  rpc Create(CreateRequest) returns (CreateResponse);
+  // Delete deletes the chat from the system.
+  rpc Delete(DeleteRequest) returns (google.protobuf.Empty);
+  // SendMessage sends a message to the server.
+  rpc SendMessage(SendMessageRequest) returns (google.protobuf.Empty);
+}
+
+message CreateRequest {
+  repeated string usernames = 1; // Usernames of the participants of the new chat.
+}
+
+message CreateResponse {
+  int64 id = 1; // ID of the new chat.
+}
+
+message DeleteRequest {
+  int64 id = 1; // ID of the chat to delete.
+}
+
+message SendMessageRequest {
+  string from = 1; // The name of the user from whom the message was sent.
+  string text = 2; // The text of the message.
+  google.protobuf.Timestamp timestamp = 3; // The time when the message was sent.
+}
