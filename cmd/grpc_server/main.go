@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"math/rand"
 	"net"
 
 	"google.golang.org/grpc"
@@ -31,7 +30,7 @@ func (s *server) Create(
 	fmt.Printf("CreateRequest: %+v\n", req)
 
 	return &desc.CreateResponse{
-		Id: rand.Int63(),
+		Id: 1337,
 	}, nil
 }
 
