@@ -1,7 +1,7 @@
 version: '3'
 
 volumes:
-  chat_postgres_volume:
+  postgres_volume:
 
 services:
   pg:
@@ -13,12 +13,12 @@ services:
     ports:
       - "${PG_PORT}:5432"
     volumes:
-      - chat_postgres_volume:/var/lib/postgresql/data
+      - postgres_volume:/var/lib/postgresql/data
     networks:
       - chat_network
 
   migrator:
-    image: ${REGISTRY}/${SERVER_IMAGE_NAME}:${TAG_NAME}
+    image: ${REGISTRY}/${MIGRATOR_IMAGE_NAME}:${TAG_NAME}
     build:
       context: .
       dockerfile: migration.Dockerfile
