@@ -1,4 +1,4 @@
-FROM golang:1.22.00-alpine AS builder
+FROM golang:1.22.0-alpine AS builder
 
 COPY . /github.com/antoneka/chat-server/source
 WORKDIR /github.com/antoneka/chat-server/source
