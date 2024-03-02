@@ -1,6 +1,33 @@
 version: '3'
 
+volumes:
+  chat_postgres_volume:
+
 services:
+  pg:
+    image: postgres:14-alpine3.17
+    environment:
+      - "POSTGRES_DB=${PG_DATABASE_NAME}"
+      - "POSTGRES_USER=${PG_USER}"
+      - "POSTGRES_PASSWORD=${PG_PASSWORD}"
+    ports:
+      - "${PG_PORT}:5432"
+    volumes:
+      - chat_postgres_volume:/var/lib/postgresql/data
+    networks:
+      - chat_network
+
+  migrator:
+    image: ${REGISTRY}/${SERVER_IMAGE_NAME}:${TAG_NAME}
+    build:
+      context: .
+      dockerfile: migration.Dockerfile
+    restart: on-failure
+    environment:
+      db_host: pg
+    networks:
+      - chat_network
+
   server:
     image: ${REGISTRY}/${SERVER_IMAGE_NAME}:${TAG_NAME}
     build:
@@ -8,4 +35,10 @@ services:
       dockerfile: Dockerfile
     container_name: ${SERVER_CONTAINER_NAME}
     ports:
-      - "50052:50052"
+      - "50052:50051"
+    networks:
+      - chat_network
+
+networks:
+  chat_network:
+    driver: bridge
