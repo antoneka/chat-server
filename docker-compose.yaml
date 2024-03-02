@@ -11,11 +11,9 @@ services:
       - "POSTGRES_USER=${PG_USER}"
       - "POSTGRES_PASSWORD=${PG_PASSWORD}"
     ports:
-      - "${PG_PORT}:5432"
+      - "${PG_PORT}:5433"
     volumes:
       - postgres_volume:/var/lib/postgresql/data
-    networks:
-      - chat_network
 
   migrator:
     image: ${REGISTRY}/${MIGRATOR_IMAGE_NAME}:${TAG_NAME}
@@ -25,8 +23,6 @@ services:
     restart: on-failure
     environment:
       db_host: pg
-    networks:
-      - chat_network
 
   server:
     image: ${REGISTRY}/${SERVER_IMAGE_NAME}:${TAG_NAME}
@@ -35,10 +31,4 @@ services:
       dockerfile: Dockerfile
     container_name: ${SERVER_CONTAINER_NAME}
     ports:
-      - "50052:50051"
-    networks:
-      - chat_network
-
-networks:
-  chat_network:
-    driver: bridge
+      - "50052:50052"
