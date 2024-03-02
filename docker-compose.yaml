@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  server:
+    image: ${REGISTRY}/${SERVER_IMAGE_NAME}:${TAG_NAME}
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ${SERVER_CONTAINER_NAME}
+    ports:
+      - "50052:50052"

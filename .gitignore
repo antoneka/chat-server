@@ -1,2 +1,4 @@
 .idea
-/bin/
+.env
+bin
+.DS_STORE

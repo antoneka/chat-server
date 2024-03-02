@@ -1,0 +1,79 @@
+name: CD
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  images-build-and-push:
+    runs-on: ubuntu-22.04
+
+    env:
+      REGISTRY: "cr.selcloud.ru/antoneka"
+
+    steps:
+      - name: Checkout master
+        uses: actions/checkout@v4
+
+      - name: Add TAG_NAME env property with commit short sha
+        run: echo "TAG_NAME=`echo ${GITHUB_SHA} | cut -c1-7`" >> $GITHUB_ENV
+
+      - name: Make envfile
+        uses: SpicyPizza/create-envfile@v2.0.3
+        with:
+          envkey_PG_DATABASE_NAME: ${{ secrets.PG_DATABASE_NAME }}
+          envkey_PG_USER: ${{ secrets.PG_USER }}
+          envkey_PG_PASSWORD: ${{ secrets.PG_PASSWORD }}
+          envkey_PG_PORT: ${{ secrets.PG_PORT }}
+          envkey_TAG_NAME: ${{ env.TAG_NAME }}
+          envkey_REGISTRY: ${{ env.REGISTRY }}
+          envkey_SERVER_IMAGE_NAME: "chat-server"
+          envkey_SERVER_CONTAINER_NAME: "chat-server-container"
+          envkey_MIGRATOR_IMAGE_NAME: "migrator"
+          envkey_MIGRATION_DIR: "./migrations"
+
+      - name: Login to Docker Registry
+        run: docker login -u ${{ secrets.REGISTRY_USERNAME }} -p ${{ secrets.REGISTRY_PASSWORD }} $REGISTRY
+
+      - name: Build and Push docker-compose images
+        run: |
+          docker-compose build
+          docker-compose push
+
+      - name: Copy docker-compose.yaml config
+        uses: easingthemes/ssh-deploy@v5.0.3
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSHKEY }}
+          REMOTE_USER: ${{ secrets.SSH_USERNAME }}
+          REMOTE_HOST: ${{ secrets.SERVER_HOST }}
+          SOURCE: docker-compose.yaml
+          TARGET: /root/chat_server/.docker-compose.yaml
+
+      - name: Copy .env file
+        uses: easingthemes/ssh-deploy@v5.0.3
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSHKEY }}
+          REMOTE_USER: ${{ secrets.SSH_USERNAME }}
+          REMOTE_HOST: ${{ secrets.SERVER_HOST }}
+          SOURCE: .env
+          TARGET: /root/chat_server/.env
+
+  deploy:
+    runs-on: ubuntu-22.04
+    needs: images-build-and-push
+
+    steps:
+      - name: Deploy to Selectel Cloud via SSH action
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSHKEY }}
+          script: |
+            cd /root/chat_server/
+            docker-compose -f .docker-compose.yaml pull
+            docker-compose down || true
+            mv {.,}docker-compose.yaml
+            docker-compose up -d

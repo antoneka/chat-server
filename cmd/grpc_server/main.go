@@ -13,7 +13,7 @@ import (
 	desc "github.com/antoneka/chat-server/pkg/chat_v1"
 )
 
-const grpcPort = 443
+const grpcPort = 50052
 
 type server struct {
 	desc.UnimplementedChatV1Server
