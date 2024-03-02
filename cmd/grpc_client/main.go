@@ -12,7 +12,7 @@ import (
 	"github.com/fatih/color"
 )
 
-const address = "localhost:50052"
+const address = "localhost:50051"
 
 func main() {
 	conn, err := grpc.Dial(address, grpc.WithTransportCredentials(insecure.NewCredentials()))
