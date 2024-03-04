@@ -10,5 +10,6 @@ FROM alpine:latest
 
 WORKDIR /root/
 COPY --from=builder /github.com/antoneka/chat-server/source/bin/chat_server .
+COPY .env .
 
 CMD ["./chat_server"]
