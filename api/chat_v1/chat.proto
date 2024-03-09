@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package chat_v1;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/antoneka/chat-server/pkg/chat_v1;chat_v1";
+
+// ChatV1 is a service responsible for the logic of the chat.
+service ChatV1 {
+  // Create creates a new chat.
+  rpc Create(CreateRequest) returns (CreateResponse);
+  // Delete deletes the chat from the system.
+  rpc Delete(DeleteRequest) returns (google.protobuf.Empty);
+  // SendMessage sends a message to the server.
+  rpc SendMessage(SendMessageRequest) returns (google.protobuf.Empty);
+  // AddUsers adds users to the chat.
+  rpc AddUsers(AddUsersRequest) returns (google.protobuf.Empty);
+  // DeleteUsers removes users from the chat.
+  rpc DeleteUsers(DeleteUsersRequest) returns (google.protobuf.Empty);
+}
+
+message CreateRequest {
+  int64 creator_user_id = 1; // The ID of the user who created the chat.
+  string chat_name = 3; // The name of the chat.
+}
+
+message CreateResponse {
+  int64 chat_id = 1; // ID of the new chat.
+}
+
+message DeleteRequest {
+  int64 chat_id = 1; // ID of the chat to delete.
+}
+
+message SendMessageRequest {
+  string user_id = 1; // ID of the user from whom the message was sent.
+  string text = 2; // The text of the message.
+  google.protobuf.Timestamp timestamp = 3; // The time when the message was sent.
+}
+
+message AddUsersRequest {
+  int64 chat_id = 1; // ID of the chat to add the users to.
+  repeated string user_ids = 2; // IDs of the users to add to the chat.
+}
+
+message DeleteUsersRequest {
+  int64 chat_id = 1; // The ID of the chat to delete the users from.
+  repeated string user_ids = 2; // The IDs of the users to delete from the chat.
+}
+
