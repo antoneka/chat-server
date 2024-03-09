@@ -31,7 +31,7 @@ func (s *server) Create(
 	fmt.Printf("CreateRequest: %+v\n", req)
 
 	return &desc.CreateResponse{
-		Id: 1337,
+		ChatId: 1337,
 	}, nil
 }
 
