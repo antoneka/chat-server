@@ -5,23 +5,20 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 CREATE TABLE IF NOT EXISTS chats (
-    id SERIAL PRIMARY KEY,
-    title TEXT NOT NULL,
-    creator_id INT NOT NULL REFERENCES users(id)
+    id SERIAL PRIMARY KEY
 );
 
 CREATE TABLE IF NOT EXISTS messages (
     id SERIAL PRIMARY KEY,
     message TEXT NOT NULL,
-    chat_id INT NOT NULL REFERENCES chats(id),
-    sender_id INT NOT NULL REFERENCES users(id),
+    chat_id INT NOT NULL REFERENCES chats(id) ON DELETE CASCADE,
+    sender_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     sent_at TIMESTAMP NOT NULL DEFAULT now()
 );
 
 CREATE TABLE IF NOT EXISTS chat_members (
-    chat_id INT NOT NULL REFERENCES chats(id),
-    user_id INT NOT NULL REFERENCES users(id),
-    role TEXT NOT NULL,
+    chat_id INT NOT NULL REFERENCES chats(id) ON DELETE CASCADE,
+    user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     PRIMARY KEY (chat_id, user_id)
 );
 -- +goose StatementEnd

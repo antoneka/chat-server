@@ -10,7 +10,7 @@ option go_package = "github.com/antoneka/chat-server/pkg/chat_v1;chat_v1";
 // ChatV1 is a gRPC service that handles chat operations such as creating chats,
 // managing users within chats, and sending messages to chats.
 service ChatV1 {
-  // Create creates a new chat with the specified name and creator user ID.
+  // Create creates a new chat with the specified users.
   // Returns the ID of the newly created chat.
   rpc CreateChat(CreateChatRequest) returns (CreateChatResponse);
   // Delete removes a chat from the system using its chat ID.
@@ -19,24 +19,15 @@ service ChatV1 {
   // SendMessage sends a message to a specified chat from a specific user.
   // Returns an empty response on success.
   rpc SendMessage(SendMessageRequest) returns (google.protobuf.Empty);
-  // AddUsers adds the specified users to the given chat by its chat ID.
-  // Returns an empty response on success.
-  rpc AddUsers(AddUsersRequest) returns (google.protobuf.Empty);
-  // KickUsers removes the specified users from the given chat by its chat ID.
-  // Returns an empty response on success.
-  rpc KickUsers(KickUsersRequest) returns (google.protobuf.Empty);
-  // ConnectToChat connects users to a chat and returns a stream of messages sent to that chat.
+  // ConnectToChat connects a user to a chat and returns a stream of messages sent to that chat.
   // Each item in the stream represents a chat message.
   rpc ConnectToChat(ConnectToChatRequest) returns (stream Message);
 }
 
 // CreateChatRequest is the request message for creating a new chat.
 message CreateChatRequest {
-  // The user ID of the person who is creating the chat.
-  int64 creator_user_id = 1;
-
-  // The name of the chat to be created.
-  string chat_name = 2;
+  // The list of user IDs to be added to the chat.
+  repeated int64 user_ids = 1;
 }
 
 // CreateChatResponse is the response message containing the ID of the newly created chat.
@@ -47,11 +38,8 @@ message CreateChatResponse {
 
 // DeleteChatRequest is the request message for deleting a chat.
 message DeleteChatRequest {
-  // The ID of the user who created the chat.
-  int64 creator_id = 1;
-
   // The ID of the chat to be deleted.
-  int64 chat_id = 2;
+  int64 chat_id = 1;
 }
 
 // SendMessageRequest is the request message for sending a message to a chat.
@@ -63,34 +51,13 @@ message SendMessageRequest {
   Message message = 2;
 }
 
-// AddUsersRequest is the request message for adding users to a chat.
-message AddUsersRequest {
-  // The ID of the chat to which users are being added.
-  int64 chat_id = 1;
-
-  // The ID of the user who created the chat.
-  int64 creator_id = 2;
-
-  // The list of user IDs to be added to the chat.
-  repeated int64 user_ids = 3;
-}
-
-// KickUsersRequest is the request message for removing users from a chat.
-message KickUsersRequest {
-  // The ID of the chat from which users are being removed.
-  int64 chat_id = 1;
-
-  // The ID of the user who created the chat.
-  int64 creator_id = 2;
-
-  // The list of user IDs to be removed from the chat.
-  repeated int64 user_ids = 3;
-}
-
 // ConnectToChatRequest is the request message for connecting users to a chat.
 message ConnectToChatRequest {
-  // The list of user IDs to connect to the chat.
-  repeated int64 user_ids = 1;
+  // The ID of the user to connect to the chat.
+  int64 user_id = 1;
+
+  // The ID of the chat to be connected to.
+  int64 chat_id = 2;
 }
 
 // Message represents a chat message that is part of the message stream.

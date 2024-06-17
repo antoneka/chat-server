@@ -3,11 +3,13 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/antoneka/chat-server/internal/storage"
-	"github.com/antoneka/chat-server/internal/storage/chat"
-	"github.com/antoneka/chat-server/internal/storage/member"
-	"github.com/antoneka/chat-server/internal/storage/message"
-	"github.com/antoneka/chat-server/internal/storage/user"
+	"github.com/antoneka/chat-server/internal/converter"
+	"github.com/antoneka/chat-server/internal/service"
+	servicechat "github.com/antoneka/chat-server/internal/service/chat"
+	storagechat "github.com/antoneka/chat-server/internal/storage/chat"
+	storagemember "github.com/antoneka/chat-server/internal/storage/member"
+	storagemessage "github.com/antoneka/chat-server/internal/storage/message"
+	storageuser "github.com/antoneka/chat-server/internal/storage/user"
 	"log"
 	"net"
 
@@ -22,38 +24,32 @@ import (
 
 type server struct {
 	desc.UnimplementedChatV1Server
-	chatRepo       storage.ChatStorage
-	userRepo       storage.UserStorage
-	chatMemberRepo storage.ChatMemberStorage
-	messageRepo    storage.MessageStorage
+	serv service.ChatService
 }
 
-// Create creates a new chat.
-func (s *server) Create(
+// CreateChat creates a new chat.
+func (s *server) CreateChat(
 	ctx context.Context,
-	req *desc.CreateRequest,
-) (*desc.CreateResponse, error) {
-	err := s.userRepo.CreateUsers(ctx, []int64{req.GetCreatorUserId()})
-
-	chatId, _ := s.chatRepo.CreateChat(ctx, req)
-
+	req *desc.CreateChatRequest,
+) (*desc.CreateChatResponse, error) {
+	chatID, err := s.serv.CreateChat(ctx, req.GetUserIds())
 	if err != nil {
 		return nil, err
 	}
 
-	fmt.Printf("Created chat with id: %d\n", chatId)
+	fmt.Printf("Created chat with id: %d\n", chatID)
 
-	return &desc.CreateResponse{
-		ChatId: chatId,
+	return &desc.CreateChatResponse{
+		ChatId: chatID,
 	}, nil
 }
 
-// Delete deletes the chat from the system.
-func (s *server) Delete(
+// DeleteChat deletes the chat from the system.
+func (s *server) DeleteChat(
 	ctx context.Context,
-	req *desc.DeleteRequest,
+	req *desc.DeleteChatRequest,
 ) (*emptypb.Empty, error) {
-	err := s.chatRepo.DeleteChat(ctx, req)
+	err := s.serv.DeleteChat(ctx, req.GetChatId())
 	if err != nil {
 		return nil, err
 	}
@@ -68,45 +64,12 @@ func (s *server) SendMessage(
 	ctx context.Context,
 	req *desc.SendMessageRequest,
 ) (*emptypb.Empty, error) {
-	err := s.userRepo.CreateUsers(ctx, []int64{req.GetUserId()})
-
-	err = s.messageRepo.SendMessage(ctx, req)
+	err := s.serv.SendMessage(ctx, converter.SendMessageToServiceMessage(req))
 	if err != nil {
 		return nil, err
 	}
 
-	fmt.Printf("Send message %s to chat %d by %d\n", req.GetText(), req.GetChatId(), req.GetUserId())
-
-	return &emptypb.Empty{}, nil
-}
-
-func (s *server) AddUsers(
-	ctx context.Context,
-	req *desc.AddUsersRequest,
-) (*emptypb.Empty, error) {
-	err := s.userRepo.CreateUsers(ctx, req.UserIds)
-
-	err = s.chatMemberRepo.AddUsers(ctx, req)
-
-	if err != nil {
-		return nil, err
-	}
-
-	fmt.Printf("Added users %v to the chat %d\n", req.GetUserIds(), req.GetChatId())
-
-	return &emptypb.Empty{}, nil
-}
-
-func (s *server) DeleteUsers(
-	ctx context.Context,
-	req *desc.DeleteUsersRequest,
-) (*emptypb.Empty, error) {
-	err := s.chatMemberRepo.DeleteUsers(ctx, req)
-	if err != nil {
-		return nil, err
-	}
-
-	fmt.Printf("Deleted users %v from chat %d\n", req.GetUserIds(), req.GetChatId())
+	fmt.Printf("Send message %s to chat %d by %d\n", req.Message.GetText(), req.GetChatId(), req.Message.GetFromUserId())
 
 	return &emptypb.Empty{}, nil
 }
@@ -129,10 +92,12 @@ func main() {
 	s := grpc.NewServer()
 	reflection.Register(s)
 	desc.RegisterChatV1Server(s, &server{
-		chatRepo:       chat.NewStorage(pool),
-		chatMemberRepo: member.NewStorage(pool),
-		messageRepo:    message.NewStorage(pool),
-		userRepo:       user.NewStorage(pool),
+		serv: servicechat.NewService(
+			storagechat.NewStorage(pool),
+			storageuser.NewStorage(pool),
+			storagemember.NewStorage(pool),
+			storagemessage.NewStorage(pool),
+		),
 	})
 
 	log.Printf("server listening at %v", lis.Addr())

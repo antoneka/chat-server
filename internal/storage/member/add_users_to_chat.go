@@ -3,19 +3,16 @@ package member
 import (
 	"context"
 	sq "github.com/Masterminds/squirrel"
-	servicemodel "github.com/antoneka/chat-server/internal/model"
 )
 
-func (s *store) AddUsers(
+func (s *store) AddUsersToChat(
 	ctx context.Context,
-	addUsersParam *servicemodel.AddUsersParam,
+	chatID int64,
+	userIDs []int64,
 ) error {
 	builder := sq.Insert(tableChatMembers).
 		Columns(chatIDColumn, userIDColumn).
 		PlaceholderFormat(sq.Dollar)
-
-	userIDs := req.GetUserIds()
-	chatID := req.GetChatId()
 
 	for _, userID := range userIDs {
 		builder = builder.Values(chatID, userID)
@@ -26,7 +23,7 @@ func (s *store) AddUsers(
 		return err
 	}
 
-	_, err = r.db.Exec(ctx, query, args...)
+	_, err = s.db.Exec(ctx, query, args...)
 	if err != nil {
 		return err
 	}

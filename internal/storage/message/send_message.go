@@ -11,11 +11,11 @@ func (s *store) SendMessage(
 	ctx context.Context,
 	message *servicemodel.Message,
 ) error {
-	storeMessage := converter.ServiceMessageToStorageMessage(message)
+	storeMessage := converter.ServiceMessageToStoreMessage(message)
 
 	builder := sq.Insert(tableMessages).
-		Columns(senderIDColumn, chatIDColumn, messageColumn).
-		Values(storeMessage.FromUserID, storeMessage.ChatID, storeMessage.Text).
+		Columns(senderIDColumn, chatIDColumn, messageColumn, sentAtColumn).
+		Values(storeMessage.FromUserID, storeMessage.ChatID, storeMessage.Text, storeMessage.SendTime).
 		PlaceholderFormat(sq.Dollar)
 
 	query, args, err := builder.ToSql()

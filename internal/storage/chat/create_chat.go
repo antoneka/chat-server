@@ -3,19 +3,14 @@ package chat
 import (
 	"context"
 	sq "github.com/Masterminds/squirrel"
-	servicemodel "github.com/antoneka/chat-server/internal/model"
-	"github.com/antoneka/chat-server/internal/storage/chat/converter"
 )
 
 func (s *store) CreateChat(
 	ctx context.Context,
-	chatInfo *servicemodel.ChatInfo,
 ) (int64, error) {
-	storeChatInfo := converter.ServiceChatInfoToStorageChatInfo(chatInfo)
-
 	builder := sq.Insert(tableChats).
-		Columns(titleColumn, creatorIDColumn).
-		Values(storeChatInfo.ChatName, storeChatInfo.CreatorUserID).
+		Columns(idColumn).
+		Values(sq.Expr("DEFAULT")).
 		Suffix("RETURNING id").
 		PlaceholderFormat(sq.Dollar)
 

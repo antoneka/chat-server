@@ -5,7 +5,7 @@ import (
 	"github.com/antoneka/chat-server/internal/storage/message/model"
 )
 
-func ServiceMessageToStorageMessage(message *servicemodel.Message) *model.Message {
+func ServiceMessageToStoreMessage(message *servicemodel.Message) *model.Message {
 	return &model.Message{
 		ChatID:     message.ChatID,
 		FromUserID: message.FromUserID,

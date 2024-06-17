@@ -8,9 +8,7 @@ import (
 const (
 	tableChats = "chats"
 
-	idColumn        = "id"
-	titleColumn     = "title"
-	creatorIDColumn = "creator_id"
+	idColumn = "id"
 )
 
 var _ storage.ChatStorage = (*store)(nil)

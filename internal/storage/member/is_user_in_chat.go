@@ -7,7 +7,7 @@ import (
 	sq "github.com/Masterminds/squirrel"
 )
 
-func (r *store) IsUserInChat(
+func (s *store) IsUserInChat(
 	ctx context.Context,
 	chatID int64,
 	userID int64,
@@ -24,7 +24,7 @@ func (r *store) IsUserInChat(
 	}
 
 	var memberID int64
-	err = r.db.QueryRow(ctx, query, args...).Scan(&memberID)
+	err = s.db.QueryRow(ctx, query, args...).Scan(&memberID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return false, nil

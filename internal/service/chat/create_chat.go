@@ -2,14 +2,23 @@ package chat
 
 import (
 	"context"
-	"github.com/antoneka/chat-server/internal/model"
 )
 
 func (s *serv) CreateChat(
 	ctx context.Context,
-	chatInfo *model.ChatInfo,
+	userIDs []int64,
 ) (int64, error) {
-	chatID, err := s.chatStorage.CreateChat(ctx, chatInfo)
+	chatID, err := s.chatStorage.CreateChat(ctx)
+	if err != nil {
+		return 0, err
+	}
+
+	err = s.userStorage.CreateUsers(ctx, userIDs)
+	if err != nil {
+		return 0, err
+	}
+
+	err = s.chatMemberStorage.AddUsersToChat(ctx, chatID, userIDs)
 	if err != nil {
 		return 0, err
 	}

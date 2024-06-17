@@ -5,7 +5,7 @@ import (
 	sq "github.com/Masterminds/squirrel"
 )
 
-func (r *store) CreateUsers(
+func (s *store) CreateUsers(
 	ctx context.Context,
 	userIDs []int64,
 ) error {
@@ -23,7 +23,7 @@ func (r *store) CreateUsers(
 		return err
 	}
 
-	_, err = r.db.Exec(ctx, query, args...)
+	_, err = s.db.Exec(ctx, query, args...)
 	if err != nil {
 		return err
 	}

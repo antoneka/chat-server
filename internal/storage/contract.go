@@ -3,7 +3,6 @@ package storage
 import (
 	"context"
 	servicemodel "github.com/antoneka/chat-server/internal/model"
-	desc "github.com/antoneka/chat-server/pkg/chat_v1"
 )
 
 type UserStorage interface {
@@ -11,13 +10,12 @@ type UserStorage interface {
 }
 
 type ChatStorage interface {
-	CreateChat(ctx context.Context, chatInfo *servicemodel.ChatInfo) (int64, error)
-	DeleteChat(ctx context.Context, chatInfo *servicemodel.ChatInfo) error
+	CreateChat(ctx context.Context) (int64, error)
+	DeleteChat(ctx context.Context, chatID int64) error
 }
 
 type ChatMemberStorage interface {
-	AddUsers(ctx context.Context, req *desc.AddUsersRequest) error
-	KickUsers(ctx context.Context, req *desc.KickUsersRequest) error
+	AddUsersToChat(ctx context.Context, chatID int64, userIDs []int64) error
 	IsUserInChat(ctx context.Context, chatID int64, userID int64) (bool, error)
 }
 

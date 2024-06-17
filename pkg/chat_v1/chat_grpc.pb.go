@@ -23,8 +23,6 @@ const (
 	ChatV1_CreateChat_FullMethodName    = "/chat_v1.ChatV1/CreateChat"
 	ChatV1_DeleteChat_FullMethodName    = "/chat_v1.ChatV1/DeleteChat"
 	ChatV1_SendMessage_FullMethodName   = "/chat_v1.ChatV1/SendMessage"
-	ChatV1_AddUsers_FullMethodName      = "/chat_v1.ChatV1/AddUsers"
-	ChatV1_KickUsers_FullMethodName     = "/chat_v1.ChatV1/KickUsers"
 	ChatV1_ConnectToChat_FullMethodName = "/chat_v1.ChatV1/ConnectToChat"
 )
 
@@ -32,7 +30,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ChatV1Client interface {
-	// Create creates a new chat with the specified name and creator user ID.
+	// Create creates a new chat with the specified users.
 	// Returns the ID of the newly created chat.
 	CreateChat(ctx context.Context, in *CreateChatRequest, opts ...grpc.CallOption) (*CreateChatResponse, error)
 	// Delete removes a chat from the system using its chat ID.
@@ -41,13 +39,7 @@ type ChatV1Client interface {
 	// SendMessage sends a message to a specified chat from a specific user.
 	// Returns an empty response on success.
 	SendMessage(ctx context.Context, in *SendMessageRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	// AddUsers adds the specified users to the given chat by its chat ID.
-	// Returns an empty response on success.
-	AddUsers(ctx context.Context, in *AddUsersRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	// KickUsers removes the specified users from the given chat by its chat ID.
-	// Returns an empty response on success.
-	KickUsers(ctx context.Context, in *KickUsersRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	// ConnectToChat connects users to a chat and returns a stream of messages sent to that chat.
+	// ConnectToChat connects a user to a chat and returns a stream of messages sent to that chat.
 	// Each item in the stream represents a chat message.
 	ConnectToChat(ctx context.Context, in *ConnectToChatRequest, opts ...grpc.CallOption) (ChatV1_ConnectToChatClient, error)
 }
@@ -81,24 +73,6 @@ func (c *chatV1Client) DeleteChat(ctx context.Context, in *DeleteChatRequest, op
 func (c *chatV1Client) SendMessage(ctx context.Context, in *SendMessageRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, ChatV1_SendMessage_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *chatV1Client) AddUsers(ctx context.Context, in *AddUsersRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, ChatV1_AddUsers_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *chatV1Client) KickUsers(ctx context.Context, in *KickUsersRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, ChatV1_KickUsers_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -141,7 +115,7 @@ func (x *chatV1ConnectToChatClient) Recv() (*Message, error) {
 // All implementations must embed UnimplementedChatV1Server
 // for forward compatibility
 type ChatV1Server interface {
-	// Create creates a new chat with the specified name and creator user ID.
+	// Create creates a new chat with the specified users.
 	// Returns the ID of the newly created chat.
 	CreateChat(context.Context, *CreateChatRequest) (*CreateChatResponse, error)
 	// Delete removes a chat from the system using its chat ID.
@@ -150,13 +124,7 @@ type ChatV1Server interface {
 	// SendMessage sends a message to a specified chat from a specific user.
 	// Returns an empty response on success.
 	SendMessage(context.Context, *SendMessageRequest) (*emptypb.Empty, error)
-	// AddUsers adds the specified users to the given chat by its chat ID.
-	// Returns an empty response on success.
-	AddUsers(context.Context, *AddUsersRequest) (*emptypb.Empty, error)
-	// KickUsers removes the specified users from the given chat by its chat ID.
-	// Returns an empty response on success.
-	KickUsers(context.Context, *KickUsersRequest) (*emptypb.Empty, error)
-	// ConnectToChat connects users to a chat and returns a stream of messages sent to that chat.
+	// ConnectToChat connects a user to a chat and returns a stream of messages sent to that chat.
 	// Each item in the stream represents a chat message.
 	ConnectToChat(*ConnectToChatRequest, ChatV1_ConnectToChatServer) error
 	mustEmbedUnimplementedChatV1Server()
@@ -174,12 +142,6 @@ func (UnimplementedChatV1Server) DeleteChat(context.Context, *DeleteChatRequest)
 }
 func (UnimplementedChatV1Server) SendMessage(context.Context, *SendMessageRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SendMessage not implemented")
-}
-func (UnimplementedChatV1Server) AddUsers(context.Context, *AddUsersRequest) (*emptypb.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AddUsers not implemented")
-}
-func (UnimplementedChatV1Server) KickUsers(context.Context, *KickUsersRequest) (*emptypb.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method KickUsers not implemented")
 }
 func (UnimplementedChatV1Server) ConnectToChat(*ConnectToChatRequest, ChatV1_ConnectToChatServer) error {
 	return status.Errorf(codes.Unimplemented, "method ConnectToChat not implemented")
@@ -251,42 +213,6 @@ func _ChatV1_SendMessage_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ChatV1_AddUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AddUsersRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ChatV1Server).AddUsers(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ChatV1_AddUsers_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ChatV1Server).AddUsers(ctx, req.(*AddUsersRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ChatV1_KickUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(KickUsersRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ChatV1Server).KickUsers(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ChatV1_KickUsers_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ChatV1Server).KickUsers(ctx, req.(*KickUsersRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _ChatV1_ConnectToChat_Handler(srv interface{}, stream grpc.ServerStream) error {
 	m := new(ConnectToChatRequest)
 	if err := stream.RecvMsg(m); err != nil {
@@ -326,14 +252,6 @@ var ChatV1_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SendMessage",
 			Handler:    _ChatV1_SendMessage_Handler,
-		},
-		{
-			MethodName: "AddUsers",
-			Handler:    _ChatV1_AddUsers_Handler,
-		},
-		{
-			MethodName: "KickUsers",
-			Handler:    _ChatV1_KickUsers_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
