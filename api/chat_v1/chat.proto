@@ -7,46 +7,100 @@ import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/antoneka/chat-server/pkg/chat_v1;chat_v1";
 
-// ChatV1 is a service responsible for the logic of the chat.
+// ChatV1 is a gRPC service that handles chat operations such as creating chats,
+// managing users within chats, and sending messages to chats.
 service ChatV1 {
-  // Create creates a new chat.
-  rpc Create(CreateRequest) returns (CreateResponse);
-  // Delete deletes the chat from the system.
-  rpc Delete(DeleteRequest) returns (google.protobuf.Empty);
-  // SendMessage sends a message to the server.
+  // Create creates a new chat with the specified name and creator user ID.
+  // Returns the ID of the newly created chat.
+  rpc CreateChat(CreateChatRequest) returns (CreateChatResponse);
+  // Delete removes a chat from the system using its chat ID.
+  // Returns an empty response on success.
+  rpc DeleteChat(DeleteChatRequest) returns (google.protobuf.Empty);
+  // SendMessage sends a message to a specified chat from a specific user.
+  // Returns an empty response on success.
   rpc SendMessage(SendMessageRequest) returns (google.protobuf.Empty);
-  // AddUsers adds users to the chat.
+  // AddUsers adds the specified users to the given chat by its chat ID.
+  // Returns an empty response on success.
   rpc AddUsers(AddUsersRequest) returns (google.protobuf.Empty);
-  // DeleteUsers removes users from the chat.
-  rpc DeleteUsers(DeleteUsersRequest) returns (google.protobuf.Empty);
+  // KickUsers removes the specified users from the given chat by its chat ID.
+  // Returns an empty response on success.
+  rpc KickUsers(KickUsersRequest) returns (google.protobuf.Empty);
+  // ConnectToChat connects users to a chat and returns a stream of messages sent to that chat.
+  // Each item in the stream represents a chat message.
+  rpc ConnectToChat(ConnectToChatRequest) returns (stream Message);
 }
 
-message CreateRequest {
-  int64 creator_user_id = 1; // The ID of the user who created the chat.
-  string chat_name = 3; // The name of the chat.
+// CreateChatRequest is the request message for creating a new chat.
+message CreateChatRequest {
+  // The user ID of the person who is creating the chat.
+  int64 creator_user_id = 1;
+
+  // The name of the chat to be created.
+  string chat_name = 2;
 }
 
-message CreateResponse {
-  int64 chat_id = 1; // ID of the new chat.
+// CreateChatResponse is the response message containing the ID of the newly created chat.
+message CreateChatResponse {
+  // The ID of the newly created chat.
+  int64 chat_id = 1;
 }
 
-message DeleteRequest {
-  int64 chat_id = 1; // ID of the chat to delete.
+// DeleteChatRequest is the request message for deleting a chat.
+message DeleteChatRequest {
+  // The ID of the user who created the chat.
+  int64 creator_id = 1;
+
+  // The ID of the chat to be deleted.
+  int64 chat_id = 2;
 }
 
+// SendMessageRequest is the request message for sending a message to a chat.
 message SendMessageRequest {
-  string user_id = 1; // ID of the user from whom the message was sent.
-  string text = 2; // The text of the message.
-  google.protobuf.Timestamp timestamp = 3; // The time when the message was sent.
+  // The ID of the chat where the message is to be sent.
+  int64 chat_id = 1;
+
+  // The message that is to be sent.
+  Message message = 2;
 }
 
+// AddUsersRequest is the request message for adding users to a chat.
 message AddUsersRequest {
-  int64 chat_id = 1; // ID of the chat to add the users to.
-  repeated string user_ids = 2; // IDs of the users to add to the chat.
+  // The ID of the chat to which users are being added.
+  int64 chat_id = 1;
+
+  // The ID of the user who created the chat.
+  int64 creator_id = 2;
+
+  // The list of user IDs to be added to the chat.
+  repeated int64 user_ids = 3;
 }
 
-message DeleteUsersRequest {
-  int64 chat_id = 1; // The ID of the chat to delete the users from.
-  repeated string user_ids = 2; // The IDs of the users to delete from the chat.
+// KickUsersRequest is the request message for removing users from a chat.
+message KickUsersRequest {
+  // The ID of the chat from which users are being removed.
+  int64 chat_id = 1;
+
+  // The ID of the user who created the chat.
+  int64 creator_id = 2;
+
+  // The list of user IDs to be removed from the chat.
+  repeated int64 user_ids = 3;
 }
 
+// ConnectToChatRequest is the request message for connecting users to a chat.
+message ConnectToChatRequest {
+  // The list of user IDs to connect to the chat.
+  repeated int64 user_ids = 1;
+}
+
+// Message represents a chat message that is part of the message stream.
+message Message {
+  // The ID of the user who sent the message.
+  int64 from_user_id = 1;
+
+  // The text content of the message.
+  string text = 2;
+
+  // The timestamp when the message was sent.
+  google.protobuf.Timestamp sent_at = 3;
+}

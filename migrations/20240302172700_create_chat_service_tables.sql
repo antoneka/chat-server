@@ -1,8 +1,7 @@
 -- +goose Up
 -- +goose StatementBegin
 CREATE TABLE IF NOT EXISTS users (
-    id INT UNIQUE NOT NULL CHECK (id > 0),
-    name TEXT NOT NULL
+    id INT UNIQUE NOT NULL CHECK (id > 0)
 );
 
 CREATE TABLE IF NOT EXISTS chats (
@@ -16,12 +15,13 @@ CREATE TABLE IF NOT EXISTS messages (
     message TEXT NOT NULL,
     chat_id INT NOT NULL REFERENCES chats(id),
     sender_id INT NOT NULL REFERENCES users(id),
-    timestamp TIMESTAMP NOT NULL DEFAULT now()
+    sent_at TIMESTAMP NOT NULL DEFAULT now()
 );
 
 CREATE TABLE IF NOT EXISTS chat_members (
     chat_id INT NOT NULL REFERENCES chats(id),
     user_id INT NOT NULL REFERENCES users(id),
+    role TEXT NOT NULL,
     PRIMARY KEY (chat_id, user_id)
 );
 -- +goose StatementEnd
