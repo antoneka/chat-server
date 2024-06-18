@@ -2,23 +2,23 @@ package chat
 
 import (
 	"github.com/antoneka/chat-server/internal/service"
-	"github.com/antoneka/chat-server/internal/storage"
+	"github.com/antoneka/chat-server/internal/storage/postgres"
 )
 
 var _ service.ChatService = (*serv)(nil)
 
 type serv struct {
-	chatStorage       storage.ChatStorage
-	userStorage       storage.UserStorage
-	chatMemberStorage storage.ChatMemberStorage
-	messageStorage    storage.MessageStorage
+	chatStorage       postgres.ChatStorage
+	userStorage       postgres.UserStorage
+	chatMemberStorage postgres.ChatMemberStorage
+	messageStorage    postgres.MessageStorage
 }
 
 func NewService(
-	chatStorage storage.ChatStorage,
-	userStorage storage.UserStorage,
-	chatMemberStorage storage.ChatMemberStorage,
-	messageStorage storage.MessageStorage,
+	chatStorage postgres.ChatStorage,
+	userStorage postgres.UserStorage,
+	chatMemberStorage postgres.ChatMemberStorage,
+	messageStorage postgres.MessageStorage,
 ) service.ChatService {
 	return &serv{
 		chatStorage:       chatStorage,

@@ -4,7 +4,7 @@ import (
 	"context"
 	sq "github.com/Masterminds/squirrel"
 	servicemodel "github.com/antoneka/chat-server/internal/model"
-	"github.com/antoneka/chat-server/internal/storage/message/converter"
+	"github.com/antoneka/chat-server/internal/storage/postgres/message/converter"
 )
 
 func (s *store) SendMessage(

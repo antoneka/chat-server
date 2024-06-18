@@ -1,7 +1,7 @@
 package user
 
 import (
-	"github.com/antoneka/chat-server/internal/storage"
+	"github.com/antoneka/chat-server/internal/storage/postgres"
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
@@ -11,12 +11,12 @@ const (
 	idColumn = "id"
 )
 
-var _ storage.UserStorage = (*store)(nil)
+var _ postgres.UserStorage = (*store)(nil)
 
 type store struct {
 	db *pgxpool.Pool
 }
 
-func NewStorage(db *pgxpool.Pool) storage.UserStorage {
+func NewStorage(db *pgxpool.Pool) postgres.UserStorage {
 	return &store{db: db}
 }

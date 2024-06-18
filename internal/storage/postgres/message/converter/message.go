@@ -2,7 +2,7 @@ package converter
 
 import (
 	servicemodel "github.com/antoneka/chat-server/internal/model"
-	"github.com/antoneka/chat-server/internal/storage/message/model"
+	"github.com/antoneka/chat-server/internal/storage/postgres/message/model"
 )
 
 func ServiceMessageToStoreMessage(message *servicemodel.Message) *model.Message {

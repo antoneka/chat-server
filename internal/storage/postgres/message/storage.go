@@ -1,7 +1,7 @@
 package message
 
 import (
-	"github.com/antoneka/chat-server/internal/storage"
+	"github.com/antoneka/chat-server/internal/storage/postgres"
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
@@ -15,12 +15,12 @@ const (
 	sentAtColumn   = "sent_at"
 )
 
-var _ storage.MessageStorage = (*store)(nil)
+var _ postgres.MessageStorage = (*store)(nil)
 
 type store struct {
 	db *pgxpool.Pool
 }
 
-func NewStorage(db *pgxpool.Pool) storage.MessageStorage {
+func NewStorage(db *pgxpool.Pool) postgres.MessageStorage {
 	return &store{db: db}
 }
