@@ -4,8 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/antoneka/chat-server/internal/client/db"
-	"github.com/antoneka/chat-server/internal/client/db/pg"
+	"github.com/antoneka/chat-server/pkg/client/db"
+	"github.com/antoneka/chat-server/pkg/client/db/pg"
+
 	"github.com/jackc/pgx/v4"
 )
 

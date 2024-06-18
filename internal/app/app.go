@@ -3,13 +3,15 @@ package app
 import (
 	"context"
 	"fmt"
-	"github.com/antoneka/chat-server/internal/closer"
-	desc "github.com/antoneka/chat-server/pkg/chat_v1"
+	"log"
+	"net"
+
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
-	"log"
-	"net"
+
+	desc "github.com/antoneka/chat-server/pkg/chat_v1"
+	"github.com/antoneka/chat-server/pkg/closer"
 )
 
 // App represents the application instance.

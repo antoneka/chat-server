@@ -2,8 +2,9 @@ package main
 
 import (
 	"context"
-	"github.com/antoneka/chat-server/internal/app"
 	"log"
+
+	"github.com/antoneka/chat-server/internal/app"
 )
 
 func main() {

@@ -3,10 +3,13 @@ package user
 import (
 	"context"
 	"fmt"
+
 	sq "github.com/Masterminds/squirrel"
-	"github.com/antoneka/chat-server/internal/client/db"
+
+	"github.com/antoneka/chat-server/pkg/client/db"
 )
 
+// CreateUsers creates new users in the database.
 func (s *store) CreateUsers(
 	ctx context.Context,
 	userIDs []int64,

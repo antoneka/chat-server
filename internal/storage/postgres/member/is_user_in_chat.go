@@ -4,11 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
 	sq "github.com/Masterminds/squirrel"
-	"github.com/antoneka/chat-server/internal/client/db"
 	"github.com/jackc/pgx/v4"
+
+	"github.com/antoneka/chat-server/pkg/client/db"
 )
 
+// IsUserInChat checks if a specific user is a member of a chat.
 func (s *store) IsUserInChat(
 	ctx context.Context,
 	chatID int64,

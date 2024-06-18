@@ -3,10 +3,13 @@ package chat
 import (
 	"context"
 	"fmt"
-	desc "github.com/antoneka/chat-server/pkg/chat_v1"
+
 	"google.golang.org/protobuf/types/known/emptypb"
+
+	desc "github.com/antoneka/chat-server/pkg/chat_v1"
 )
 
+// DeleteChat handles the gRPC request to delete an existing chat.
 func (s *Implementation) DeleteChat(
 	ctx context.Context,
 	req *desc.DeleteChatRequest,

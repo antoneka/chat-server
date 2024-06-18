@@ -3,10 +3,13 @@ package member
 import (
 	"context"
 	"fmt"
+
 	sq "github.com/Masterminds/squirrel"
-	"github.com/antoneka/chat-server/internal/client/db"
+
+	"github.com/antoneka/chat-server/pkg/client/db"
 )
 
+// AddUsersToChat adds multiple users to a chat.
 func (s *store) AddUsersToChat(
 	ctx context.Context,
 	chatID int64,

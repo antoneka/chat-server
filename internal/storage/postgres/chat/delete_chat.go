@@ -3,10 +3,13 @@ package chat
 import (
 	"context"
 	"fmt"
+
 	sq "github.com/Masterminds/squirrel"
-	"github.com/antoneka/chat-server/internal/client/db"
+
+	"github.com/antoneka/chat-server/pkg/client/db"
 )
 
+// DeleteChat deletes a chat from the database using its ID.
 func (s *store) DeleteChat(
 	ctx context.Context,
 	chatID int64,

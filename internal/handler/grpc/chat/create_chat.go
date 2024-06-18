@@ -3,9 +3,11 @@ package chat
 import (
 	"context"
 	"fmt"
+
 	desc "github.com/antoneka/chat-server/pkg/chat_v1"
 )
 
+// CreateChat handles the gRPC request to create a new chat.
 func (s *Implementation) CreateChat(
 	ctx context.Context,
 	req *desc.CreateChatRequest,

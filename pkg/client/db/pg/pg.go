@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/antoneka/chat-server/pkg/client/db"
+	"github.com/antoneka/chat-server/pkg/client/db/prettier"
+
 	"golang.org/x/net/context"
 
-	"github.com/antoneka/chat-server/internal/client/db"
-	"github.com/antoneka/chat-server/internal/client/db/prettier"
 	"github.com/georgysavva/scany/pgxscan"
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4"

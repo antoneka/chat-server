@@ -3,12 +3,15 @@ package message
 import (
 	"context"
 	"fmt"
+
 	sq "github.com/Masterminds/squirrel"
-	"github.com/antoneka/chat-server/internal/client/db"
+
 	servicemodel "github.com/antoneka/chat-server/internal/model"
 	"github.com/antoneka/chat-server/internal/storage/postgres/message/converter"
+	"github.com/antoneka/chat-server/pkg/client/db"
 )
 
+// SendMessage sends a message to a chat.
 func (s *store) SendMessage(
 	ctx context.Context,
 	message *servicemodel.Message,

@@ -3,11 +3,14 @@ package chat
 import (
 	"context"
 	"fmt"
+
+	"google.golang.org/protobuf/types/known/emptypb"
+
 	"github.com/antoneka/chat-server/internal/handler/grpc/chat/converter"
 	desc "github.com/antoneka/chat-server/pkg/chat_v1"
-	"google.golang.org/protobuf/types/known/emptypb"
 )
 
+// SendMessage handles the gRPC request to send a message in a chat.
 func (s *Implementation) SendMessage(
 	ctx context.Context,
 	req *desc.SendMessageRequest,

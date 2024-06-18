@@ -3,10 +3,13 @@ package chat
 import (
 	"context"
 	"fmt"
+
 	sq "github.com/Masterminds/squirrel"
-	"github.com/antoneka/chat-server/internal/client/db"
+
+	"github.com/antoneka/chat-server/pkg/client/db"
 )
 
+// CreateChat creates a new chat in the database and returns its ID.
 func (s *store) CreateChat(
 	ctx context.Context,
 ) (int64, error) {
