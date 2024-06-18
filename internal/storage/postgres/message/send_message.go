@@ -2,7 +2,9 @@ package message
 
 import (
 	"context"
+	"fmt"
 	sq "github.com/Masterminds/squirrel"
+	"github.com/antoneka/chat-server/internal/client/db"
 	servicemodel "github.com/antoneka/chat-server/internal/model"
 	"github.com/antoneka/chat-server/internal/storage/postgres/message/converter"
 )
@@ -11,6 +13,8 @@ func (s *store) SendMessage(
 	ctx context.Context,
 	message *servicemodel.Message,
 ) error {
+	const op = "storage.postgres.message.SendMessage"
+
 	storeMessage := converter.ServiceMessageToStoreMessage(message)
 
 	builder := sq.Insert(tableMessages).
@@ -20,12 +24,17 @@ func (s *store) SendMessage(
 
 	query, args, err := builder.ToSql()
 	if err != nil {
-		return err
+		return fmt.Errorf("%s: %w", op, err)
 	}
 
-	_, err = s.db.Exec(ctx, query, args...)
+	q := db.Query{
+		Name:     op,
+		QueryRaw: query,
+	}
+
+	_, err = s.db.DB().ExecContext(ctx, q, args...)
 	if err != nil {
-		return err
+		return fmt.Errorf("%s: %w", op, err)
 	}
 
 	return nil

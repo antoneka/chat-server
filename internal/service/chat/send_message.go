@@ -2,7 +2,7 @@ package chat
 
 import (
 	"context"
-	"errors"
+	"fmt"
 	"github.com/antoneka/chat-server/internal/model"
 )
 
@@ -10,18 +10,20 @@ func (s *serv) SendMessage(
 	ctx context.Context,
 	message *model.Message,
 ) error {
+	const op = "service.chat.SendMessage"
+
 	isUserInChat, err := s.chatMemberStorage.IsUserInChat(ctx, message.ChatID, message.FromUserID)
 	if err != nil {
-		return err
+		return fmt.Errorf("%s: %w", op, err)
 	}
 
 	if !isUserInChat {
-		return errors.New("user is not in chat")
+		return fmt.Errorf("%s: the user %d is not in the chat %d", op, message.FromUserID, message.ChatID)
 	}
 
 	err = s.messageStorage.SendMessage(ctx, message)
 	if err != nil {
-		return err
+		return fmt.Errorf("%s: %w", op, err)
 	}
 
 	return nil

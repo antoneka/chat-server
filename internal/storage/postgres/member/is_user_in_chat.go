@@ -2,9 +2,11 @@ package member
 
 import (
 	"context"
-	"database/sql"
 	"errors"
+	"fmt"
 	sq "github.com/Masterminds/squirrel"
+	"github.com/antoneka/chat-server/internal/client/db"
+	"github.com/jackc/pgx/v4"
 )
 
 func (s *store) IsUserInChat(
@@ -12,25 +14,32 @@ func (s *store) IsUserInChat(
 	chatID int64,
 	userID int64,
 ) (bool, error) {
+	const op = "storage.postgres.member.IsUserInChat"
+
 	builder := sq.Select(userIDColumn).
 		From(tableChatMembers).
-		Where(sq.Eq{chatIDColumn: chatID}, sq.Eq{userIDColumn: userID}).
+		Where(sq.Eq{chatIDColumn: chatID, userIDColumn: userID}).
 		Limit(1).
 		PlaceholderFormat(sq.Dollar)
 
 	query, args, err := builder.ToSql()
 	if err != nil {
-		return false, err
+		return false, fmt.Errorf("%s: %w", op, err)
+	}
+
+	q := db.Query{
+		Name:     op,
+		QueryRaw: query,
 	}
 
 	var memberID int64
-	err = s.db.QueryRow(ctx, query, args...).Scan(&memberID)
+	err = s.db.DB().ScanOneContext(ctx, &memberID, q, args...)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return false, nil
 		}
 
-		return false, err
+		return false, fmt.Errorf("%s: %w", op, err)
 	}
 
 	return true, nil

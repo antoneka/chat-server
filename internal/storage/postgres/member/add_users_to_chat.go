@@ -2,7 +2,9 @@ package member
 
 import (
 	"context"
+	"fmt"
 	sq "github.com/Masterminds/squirrel"
+	"github.com/antoneka/chat-server/internal/client/db"
 )
 
 func (s *store) AddUsersToChat(
@@ -10,6 +12,8 @@ func (s *store) AddUsersToChat(
 	chatID int64,
 	userIDs []int64,
 ) error {
+	const op = "storage.postgres.member.AddUsersToChat"
+
 	builder := sq.Insert(tableChatMembers).
 		Columns(chatIDColumn, userIDColumn).
 		PlaceholderFormat(sq.Dollar)
@@ -20,12 +24,17 @@ func (s *store) AddUsersToChat(
 
 	query, args, err := builder.ToSql()
 	if err != nil {
-		return err
+		return fmt.Errorf("%s: %w", op, err)
 	}
 
-	_, err = s.db.Exec(ctx, query, args...)
+	q := db.Query{
+		Name:     op,
+		QueryRaw: query,
+	}
+
+	_, err = s.db.DB().ExecContext(ctx, q, args...)
 	if err != nil {
-		return err
+		return fmt.Errorf("%s: %w", op, err)
 	}
 
 	return nil
