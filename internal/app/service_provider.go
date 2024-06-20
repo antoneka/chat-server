@@ -4,6 +4,11 @@ import (
 	"context"
 	"log"
 
+	"github.com/antoneka/platform-common/pkg/closer"
+	"github.com/antoneka/platform-common/pkg/db"
+	"github.com/antoneka/platform-common/pkg/db/pg"
+	"github.com/antoneka/platform-common/pkg/db/transaction"
+
 	"github.com/antoneka/chat-server/internal/config"
 	"github.com/antoneka/chat-server/internal/handler/grpc/chat"
 	"github.com/antoneka/chat-server/internal/service"
@@ -13,10 +18,6 @@ import (
 	memberStorage "github.com/antoneka/chat-server/internal/storage/postgres/member"
 	messageStorage "github.com/antoneka/chat-server/internal/storage/postgres/message"
 	userStorage "github.com/antoneka/chat-server/internal/storage/postgres/user"
-	"github.com/antoneka/chat-server/pkg/client/db"
-	"github.com/antoneka/chat-server/pkg/client/db/pg"
-	"github.com/antoneka/chat-server/pkg/client/db/transaction"
-	"github.com/antoneka/chat-server/pkg/closer"
 )
 
 // serviceProvider is a DI container that manages service dependencies.

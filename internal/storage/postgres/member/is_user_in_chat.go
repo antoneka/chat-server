@@ -8,7 +8,7 @@ import (
 	sq "github.com/Masterminds/squirrel"
 	"github.com/jackc/pgx/v4"
 
-	"github.com/antoneka/chat-server/pkg/client/db"
+	"github.com/antoneka/platform-common/pkg/db"
 )
 
 // IsUserInChat checks if a specific user is a member of a chat.

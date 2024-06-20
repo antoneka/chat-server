@@ -6,7 +6,7 @@ import (
 
 	sq "github.com/Masterminds/squirrel"
 
-	"github.com/antoneka/chat-server/pkg/client/db"
+	"github.com/antoneka/platform-common/pkg/db"
 )
 
 // CreateUsers creates new users in the database.

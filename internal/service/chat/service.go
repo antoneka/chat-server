@@ -1,9 +1,10 @@
 package chat
 
 import (
+	"github.com/antoneka/platform-common/pkg/db"
+
 	"github.com/antoneka/chat-server/internal/service"
 	"github.com/antoneka/chat-server/internal/storage/postgres"
-	"github.com/antoneka/chat-server/pkg/client/db"
 )
 
 var _ service.ChatService = (*serv)(nil)

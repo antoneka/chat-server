@@ -10,8 +10,9 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
 
+	"github.com/antoneka/platform-common/pkg/closer"
+
 	desc "github.com/antoneka/chat-server/pkg/chat_v1"
-	"github.com/antoneka/chat-server/pkg/closer"
 )
 
 // App represents the application instance.

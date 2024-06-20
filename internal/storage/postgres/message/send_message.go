@@ -6,9 +6,10 @@ import (
 
 	sq "github.com/Masterminds/squirrel"
 
+	"github.com/antoneka/platform-common/pkg/db"
+
 	servicemodel "github.com/antoneka/chat-server/internal/model"
 	"github.com/antoneka/chat-server/internal/storage/postgres/message/converter"
-	"github.com/antoneka/chat-server/pkg/client/db"
 )
 
 // SendMessage sends a message to a chat.

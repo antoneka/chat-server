@@ -6,7 +6,7 @@ import (
 
 	sq "github.com/Masterminds/squirrel"
 
-	"github.com/antoneka/chat-server/pkg/client/db"
+	"github.com/antoneka/platform-common/pkg/db"
 )
 
 // AddUsersToChat adds multiple users to a chat.

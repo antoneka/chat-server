@@ -1,8 +1,9 @@
 package message
 
 import (
+	"github.com/antoneka/platform-common/pkg/db"
+
 	"github.com/antoneka/chat-server/internal/storage/postgres"
-	"github.com/antoneka/chat-server/pkg/client/db"
 )
 
 const (
